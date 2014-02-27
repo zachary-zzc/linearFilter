@@ -3,7 +3,6 @@
 
 #include <armadillo>
 #include <vector>
-#include <stack>
 #include <assert.h>
 #include <math.h>
 
@@ -13,13 +12,7 @@
 using namespace std;
 using namespace arma;
 
-//template <typename T>
 class Cell{
-    private:
-        bool m_bActivated;
-        vector<int> m_vecPointerList;
-        vector< vector<int> > m_vecMatrixColIndexList;
-
     public:
         Cell();
         ~Cell();
@@ -42,6 +35,11 @@ class Cell{
         void addIndex(int iCellIndex, int iColIndex);
 
         int getNextCellIndex(int iMyIndex, double dParam1, double dParam2, int iSplitCount, int iRowCount, vec vecElem);
+    
+    private:
+        bool m_bActivated;
+        vector<int> m_vecPointerList;
+        vector< vector<int> > m_vecMatrixColIndexList;
 };
 
 #endif
