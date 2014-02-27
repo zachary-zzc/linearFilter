@@ -71,8 +71,9 @@ int Floor::ergodicFloor(const mat& matrix, const uint& iSplitCount, const uint& 
 
 
 int Floor::initCounter(){
-    for (uint i = 0; i <= getLength(); i ++ ){
-        *m_pCounter = 0;
+    for (uint i = 0; i <= m_iLength; i ++ ){
+        *(m_pCounter + i) = 0;
+        *(m_pOffsetCounter + i) = 0;
     }
     return 0;
 }
@@ -108,12 +109,6 @@ int Floor::setList(Floor prevFloor, const mat& matrix, const uint& iSplitCount, 
 
 int Floor::addIndex(const uint& iPrevCellIndex, const uint& iCurCellIndex, const uint& iColIndex){
     uint offset = getCounter(iCurCellIndex) + ((*(m_pCounter + iCurCellIndex)) - (*(m_pOffsetCounter + iCurCellIndex)));
-    cout << "iCurCellIndex : " << iCurCellIndex << endl;
-    cout << "getCounter : " << getCounter(iCurCellIndex) << endl;
-    cout << "1 : " << (*(m_pCounter + iCurCellIndex)) << endl;
-    cout << "2 : " << (*(m_pOffsetCounter + iCurCellIndex)) << endl;
-    cout << "offset : " << offset << endl;
-    cout << "Fine Here" << endl;
     (*(m_pOffsetCounter + iCurCellIndex)) --;
 
     *(m_pCellPointerList + offset) = iPrevCellIndex;

@@ -122,14 +122,13 @@ int Building::initBuilding(mat matrix){
     m_vecFloors.clear();
     Floor firstFloor(m_iSplitCount, m_iRowCount); 
     firstFloor.initFirstFloor(m_matrix, m_iSplitCount, m_iRowCount);
-    cout << "Fine Here!" << endl;
     return 0;
 }
 
 int Building::build(){
     // first floor has been built when building was constructed
     for (int i = 1; i < m_iHeight; i++){
-
+        cout << m_vecFloors[i-1].getLength() << endl;
         cout << "Floor " << i << " Total Cell Number : " << m_vecFloors[i-1].getLength() << endl;
         uint iActivatedCellCount = 0;
         for (uint l = 0; l < m_vecFloors[i-1].getLength(); l ++){

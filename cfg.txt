@@ -1,4 +1,4 @@
-row count: 4
-split interval: 0.1
-height: 3
+row count: 2
+split interval: 0.2
+height: 2
 thresheld: 0.1
