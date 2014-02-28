@@ -106,6 +106,7 @@ int Filter::init(){
 int Filter::genBuilding(mat matrix){
     m_bStorage.initBuilding(matrix);
     m_bStorage.build();
+    cout << "genBuilding finished" << endl;
     return 0;
 }
 

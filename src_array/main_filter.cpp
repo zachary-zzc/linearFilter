@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
     cout << "Start Build" << endl;
     matLinearFilter.genBuilding(matrix);
     cout << "Build Success" << endl << endl;
-
+    
     cout << "Start to Trace Back" << endl;
     matLinearFilter.doFilter();
     cout << "Trace Back Success, Check Output in: " << matLinearFilter.getRecordFilePath() << endl;

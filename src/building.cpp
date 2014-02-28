@@ -155,13 +155,15 @@ int Building::build(){
     for (int i = 1; i < m_iHeight; i++){
 
         cout << "Floor " << i << " Total Cell Number : " << m_vecFloors[i-1].vecCells.size() << endl;
+        cout << "Floor " << i << " Activated Cells are : " << endl;
         int iActivatedCellCount = 0;
         for (vector<Cell>::iterator iter = m_vecFloors[i-1].vecCells.begin(); iter != m_vecFloors[i-1].vecCells.end(); iter ++){
             if (iter->checkActivated()){
+                cout << (iter - m_vecFloors[i-1].vecCells.begin()) << " ";
                 iActivatedCellCount ++;
             }
         }
-        cout << "Floor " << i << " Activated Cell Number : " << iActivatedCellCount << endl;
+        cout << endl << "Floor " << i << " Activated Cell Number : " << iActivatedCellCount << endl;
         cout << endl;
 
         cout << "Set up floor " << i+1 << "..." << endl; 

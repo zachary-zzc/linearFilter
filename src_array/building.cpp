@@ -35,8 +35,8 @@ Building::~Building(){
 int Building::generateNextFloor(Floor thisFloor, Floor &nextFloor){
     cout << "Set up Counter..." << endl;
     nextFloor.setCounter(thisFloor, m_matrix, m_iSplitCount, m_iRowCount);
-    cout << "Set up Counter Success, total counter : " << nextFloor.getCounter(nextFloor.getLength()) << endl << endl;
-    
+    cout << "Set up Counter Success" << endl << endl;
+
     cout << "Set up Floor..." << endl;
     nextFloor.setList(thisFloor, m_matrix, m_iSplitCount, m_iRowCount);
     cout << "Set up Floor Success" << endl << endl;
@@ -117,38 +117,40 @@ int Building::initBuilding(mat matrix){
     cout << "Max: " << max(max(m_matrix)) << endl;
     cout << "Min: " << min(min(m_matrix)) << endl;
 
-    // set up first floor
-    cout << "Set up floor 1..." << endl;
-    m_vecFloors.clear();
-    Floor firstFloor(m_iSplitCount, m_iRowCount); 
-    firstFloor.initFirstFloor(m_matrix, m_iSplitCount, m_iRowCount);
     return 0;
 }
 
 int Building::build(){
-    // first floor has been built when building was constructed
-    for (int i = 1; i < m_iHeight; i++){
-        cout << m_vecFloors[i-1].getLength() << endl;
-        cout << "Floor " << i << " Total Cell Number : " << m_vecFloors[i-1].getLength() << endl;
+    // set up first floor
+    cout << "Set up floor 1..." << endl;
+    m_vecFloors.clear();
+    for (int i = 0; i != m_iHeight; i++){
+        m_vecFloors.push_back(Floor(m_iSplitCount, m_iRowCount));
+    }
+    // m_vecFloors[0].initFirstFloor(m_matrix, m_iSplitCount, m_iRowCount);
+
+    // set up higher floors
+    for (int i = 1; i != m_iHeight; i++){
+        cout << "Floor " << i << " Activated Cells are : " << endl;
         uint iActivatedCellCount = 0;
-        for (uint l = 0; l < m_vecFloors[i-1].getLength(); l ++){
+        for (uint l = 0; l != m_vecFloors[i-1].getLength(); l ++){
             if (m_vecFloors[i-1].checkActivated(l)){
+                cout << l << " ";
                 iActivatedCellCount ++;
             }
         }
-        cout << "Floor " << i << " Activated Cell Number : " << iActivatedCellCount << endl;
+        cout << endl << "Floor " << i << " Activated Cell Number : " << iActivatedCellCount << endl;
         cout << endl;
 
         cout << "Set up floor " << i+1 << "..." << endl; 
-        Floor nextFloor(m_iSplitCount, m_iRowCount);
-        generateNextFloor(m_vecFloors[i-1], nextFloor);
-        m_vecFloors.push_back(nextFloor);
+        generateNextFloor(m_vecFloors[i-1], m_vecFloors[i]);
     }
+    cout << "build func finish" << endl;
     return 0;
 }
 
-/*int Building::traceBack(){
-    ofstream ofs(m_strRecordFilePath.c_str());
+int Building::traceBack(){
+    /*ofstream ofs(m_strRecordFilePath.c_str());
     if (ofs.fail()){
         cerr << "Open output file error " << endl;
         exit(EXIT_FAILURE);
@@ -171,6 +173,6 @@ int Building::build(){
             }
         }
     }
-    ofs.close();
+    ofs.close();*/
     return 0;
-}*/
+}

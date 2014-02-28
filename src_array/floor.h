@@ -19,7 +19,7 @@ class Floor{
         bool checkActivated(const uint& iIndex);
         bool checkLinear(const uint& iIndex, const uint& iSplitCount, const uint& iRowCount, const double& dThresheld);
 
-        int ergodicFloor(const mat& matrix, const uint& iSplitCount, const uint& iRowCount, int (Floor::*f)(const uint&, const uint&, const uint&));
+        int ergodicFloor(Floor& nextFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount, int (Floor::*f)(const uint&, const uint&, const uint&));
 
         int setCounter(Floor prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount);
 
@@ -28,8 +28,10 @@ class Floor{
         // for first floor use
         int initFirstFloor(const mat& matrix, const uint& iSplitCount, const uint& iRowCount);
 
-        inline uint getLength(){return m_iLength;}
         uint getCounter(const uint& iLength);
+        inline uint getLength(){return m_iLength;}
+        void display(){for (uint i = 0; i != m_iLength; i++){cout << (*(m_pCounter+i)) << " ";} cout << endl;}
+        void displayOffset(){for (uint i = 0; i != m_iLength; i++){cout << (*(m_pOffsetCounter+i)) << " ";} cout << endl;}
     private:
         uint *m_pCellPointerList;
         uint *m_pColIndexList;
@@ -38,7 +40,6 @@ class Floor{
 
         uint m_iLength;
 
-        int initCounter();
         int addCounter(const uint& iPrevCellIndex, const uint& iCurCellIndex, const uint& iColIndex);
 
         int initList();

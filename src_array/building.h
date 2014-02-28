@@ -30,7 +30,8 @@ class Building{
         int initBuilding(mat matrix);
 
         int  build();
-        // int  traceBack();
+        int  traceBack();
+        void display(int i){m_vecFloors[i].display();}
 
     private:
         string m_strRecordFilePath;
