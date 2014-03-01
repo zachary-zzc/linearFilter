@@ -21,17 +21,18 @@ class Floor{
 
         int ergodicFloor(Floor& nextFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount, int (Floor::*f)(const uint&, const uint&, const uint&));
 
-        int setCounter(Floor prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount);
+        int setCounter(Floor& prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount);
 
-        int setList(Floor prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount); 
+        int setList(Floor& prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount); 
 
         // for first floor use
         int initFirstFloor(const mat& matrix, const uint& iSplitCount, const uint& iRowCount);
 
         uint getCounter(const uint& iLength);
         inline uint getLength(){return m_iLength;}
-        void display(){for (uint i = 0; i != m_iLength; i++){cout << (*(m_pCounter+i)) << " ";} cout << endl;}
-        void displayOffset(){for (uint i = 0; i != m_iLength; i++){cout << (*(m_pOffsetCounter+i)) << " ";} cout << endl;}
+
+        uint getCellIndex(uint iIndex){return (*(m_pCellPointerList + iIndex));}
+        uint getColIndex(uint iIndex){return (*(m_pColIndexList + iIndex));}
     private:
         uint *m_pCellPointerList;
         uint *m_pColIndexList;

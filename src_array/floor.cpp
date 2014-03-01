@@ -76,13 +76,12 @@ int Floor::ergodicFloor(Floor& nextFloor, const mat& matrix, const uint& iSplitC
        uint iScale = m_iLength / 10;
        if (i % iScale == 0 && i != 0){
            cout << "Finish scan " << i / iScale * 10 << "\% cells..." << endl;
-           cout << endl;
        }
    }
    return 0;
 }
 
-int Floor::setCounter(Floor prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount){
+int Floor::setCounter(Floor& prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount){
     assert(m_pCounter != NULL && m_pOffsetCounter != NULL);
     prevFloor.ergodicFloor(*this, matrix, iSplitCount, iRowCount, &Floor::addCounter);
     return 0;
@@ -96,8 +95,11 @@ int Floor::initList(){
     return 0;
 }
 
-int Floor::setList(Floor prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount){
+int Floor::setList(Floor& prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount){
     initList();
+
+    assert(m_pOffsetCounter != NULL && m_pCellPointerList != NULL && m_pColIndexList != NULL);
+
     prevFloor.ergodicFloor(*this, matrix, iSplitCount, iRowCount, &Floor::addIndex);
 
     delete[] m_pOffsetCounter;
@@ -179,4 +181,4 @@ int Floor::initFirstFloor(const mat& matrix, const uint& iSplitCount, const uint
     cout << endl;
     return 0;
 }
-    
+

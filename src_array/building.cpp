@@ -23,6 +23,10 @@ Building::Building():
 
 
 Building::~Building(){
+    for (vector<Floor*>::iterator iter = m_pFloors.begin(); iter != m_pFloors.end(); iter ++){
+        delete *iter;
+    }
+    m_pFloors.clear();
 }
 
 // ----------------------------------------------
@@ -32,7 +36,7 @@ Building::~Building(){
 //           Input matrix
 // Output  : State
 // ----------------------------------------------
-int Building::generateNextFloor(Floor thisFloor, Floor &nextFloor){
+int Building::generateNextFloor(Floor& thisFloor, Floor &nextFloor){
     cout << "Set up Counter..." << endl;
     nextFloor.setCounter(thisFloor, m_matrix, m_iSplitCount, m_iRowCount);
     cout << "Set up Counter Success" << endl << endl;
@@ -44,29 +48,27 @@ int Building::generateNextFloor(Floor thisFloor, Floor &nextFloor){
     return 0;
 }
 
-/*int Building::dfs(Cell* pCurCell, int iFloorIndex, vector<int> &vecColList, ofstream &ofs){
-    if (pCurCell->lastColListSize() == 0 || iFloorIndex == 0){
+int Building::dfs(uint iCellIndex, int iFloorIndex, vector<uint> &vecColList, ofstream &ofs){
+    uint iStartIndex = (iCellIndex == 0) ? 0 : (m_pFloors[iFloorIndex]->getCounter(iCellIndex-1));
+    if (iFloorIndex == 0){
         // this is the last floor, size of lastColListSize() == 0, col index stored in pointer list
-        for (int i = 0; i < pCurCell->lastCellListSize(); i ++){
-            vecColList.push_back(pCurCell->getLastCellIndex(i));
-            Utils::record<int>(vecColList, ofs);
+        for (uint i = iStartIndex; i != m_pFloors[iFloorIndex]->getCounter(iCellIndex); i ++){
+            vecColList.push_back(m_pFloors[iFloorIndex]->getColIndex(i));
+            Utils::record<uint>(vecColList, ofs);
             vecColList.pop_back();
         }
     }
     else{
-        for (int i = 0; i < pCurCell->lastCellListSize(); i ++){
-            vector<int> vecColIndex;
-            pCurCell->getLastColIndex(i, vecColIndex);
-            for (vector<int>::iterator iter = vecColIndex.begin(); iter != vecColIndex.end(); iter ++){
-                vecColList.push_back(*iter);
-                Cell* pNextCell = getCell(iFloorIndex-1, pCurCell->getLastCellIndex(i));
-                dfs(pNextCell, iFloorIndex-1, vecColList, ofs);
-                vecColList.pop_back();
-            }
+        for (uint i = iStartIndex; i != m_pFloors[iFloorIndex]->getCounter(iCellIndex); i ++){
+            // for (vector<int>::iterator iter = vecColIndex.begin(); iter != vecColIndex.end(); iter ++){
+            vecColList.push_back(m_pFloors[iFloorIndex]->getColIndex(i));
+            uint iNextCellIndex = m_pFloors[iFloorIndex]->getCellIndex(i);
+            dfs(iNextCellIndex, iFloorIndex-1, vecColList, ofs);
+            vecColList.pop_back();
         }
     }
     return 0;
-}*/
+}
         
     
 void Building::setRecordFilePath(string strRecordPath){
@@ -123,18 +125,24 @@ int Building::initBuilding(mat matrix){
 int Building::build(){
     // set up first floor
     cout << "Set up floor 1..." << endl;
-    m_vecFloors.clear();
-    for (int i = 0; i != m_iHeight; i++){
-        m_vecFloors.push_back(Floor(m_iSplitCount, m_iRowCount));
-    }
-    // m_vecFloors[0].initFirstFloor(m_matrix, m_iSplitCount, m_iRowCount);
+    m_pFloors.clear();
+
+    /*for (uint i = 0; i != m_iHeight; i ++){
+        Floor* pFloor = new Floor(m_iSplitCount, m_iRowCount);
+        m_pFloors.push_back(pFloor);
+    }*/
+
+    Floor* pFirstFloor = new Floor(m_iSplitCount, m_iRowCount);
+    pFirstFloor->initFirstFloor(m_matrix, m_iSplitCount, m_iRowCount);
+    m_pFloors.push_back(pFirstFloor);
+    pFirstFloor = NULL;
 
     // set up higher floors
     for (int i = 1; i != m_iHeight; i++){
         cout << "Floor " << i << " Activated Cells are : " << endl;
         uint iActivatedCellCount = 0;
-        for (uint l = 0; l != m_vecFloors[i-1].getLength(); l ++){
-            if (m_vecFloors[i-1].checkActivated(l)){
+            for (uint l = 0; l != m_pFloors[i-1]->getLength(); l ++){
+            if (m_pFloors[i-1]->checkActivated(l)){
                 cout << l << " ";
                 iActivatedCellCount ++;
             }
@@ -143,14 +151,16 @@ int Building::build(){
         cout << endl;
 
         cout << "Set up floor " << i+1 << "..." << endl; 
-        generateNextFloor(m_vecFloors[i-1], m_vecFloors[i]);
-    }
-    cout << "build func finish" << endl;
+        Floor* pFloor = new Floor(m_iSplitCount, m_iRowCount);
+        m_pFloors.push_back(pFloor);
+        generateNextFloor(*m_pFloors[i-1], *m_pFloors[i]);
+        pFloor = NULL;
+    } 
     return 0;
 }
 
 int Building::traceBack(){
-    /*ofstream ofs(m_strRecordFilePath.c_str());
+    ofstream ofs(m_strRecordFilePath.c_str());
     if (ofs.fail()){
         cerr << "Open output file error " << endl;
         exit(EXIT_FAILURE);
@@ -160,19 +170,22 @@ int Building::traceBack(){
     for (int iCurFloor = m_iHeight-1; iCurFloor > 0; iCurFloor --){
         cout << "Checking Floor " << iCurFloor+1 << "..." << endl;
         int iCurCellIndex = 0;
-        for (vector<Cell>::iterator iter = m_vecFloors[iCurFloor].vecCells.begin(); iter != m_vecFloors[iCurFloor].vecCells.end(); iter ++, iCurCellIndex ++ ){
-            if (iter->checkActivated() && iter->checkLinear(iCurCellIndex, m_iSplitCount, m_iRowCount, m_dThresheld)){
+        // for (vector<Cell>::iterator iter = m_pFloors[iCurFloor].vecCells.begin(); iter != m_vecFloors[iCurFloor].vecCells.end(); iter ++, iCurCellIndex ++ ){
+        for (uint i = 0; i != m_pFloors[iCurFloor]->getLength(); i ++ ){
+            // if (iter->checkActivated() && iter->checkLinear(iCurCellIndex, m_iSplitCount, m_iRowCount, m_dThresheld)){
+            if (m_pFloors[iCurFloor]->checkActivated(i) && m_pFloors[iCurFloor]->checkLinear(i, m_iSplitCount, m_iRowCount, m_dThresheld)){
                 cout << iCurCellIndex << " is LINEAR and ACTIVATED, start trace back from this cell..." << endl;
                 vec printVec(m_iRowCount);
-                Cell::indexToVector(iCurCellIndex, printVec, m_iSplitCount, m_iRowCount);
+                Utils::indexToVector(iCurCellIndex, printVec, m_iSplitCount, m_iRowCount);
                 printVec.print("Linear Vector is : ");
                 cout << "Linear under thresheld : " << m_dThresheld << endl; 
+
                 // this cell is activated and linear, trace back start from this cell
-                vector<int> vecColList;
-                dfs(&(*iter), iCurFloor, vecColList, ofs);
+                vector<uint> vecColList;
+                dfs(i, iCurFloor, vecColList, ofs);
             }
         }
     }
-    ofs.close();*/
+    ofs.close();
     return 0;
 }

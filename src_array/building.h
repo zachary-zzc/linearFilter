@@ -31,7 +31,6 @@ class Building{
 
         int  build();
         int  traceBack();
-        void display(int i){m_vecFloors[i].display();}
 
     private:
         string m_strRecordFilePath;
@@ -42,11 +41,11 @@ class Building{
 
         mat m_matrix;
 
-        vector<Floor> m_vecFloors;
+        vector< Floor* > m_pFloors;
 
-        // int dfs(Cell* pCurCell, int iFloorIndex, vector<int> &vecColList, ofstream &ofs);
+        int dfs(uint iCellIndex, int iFloorIndex, vector<uint> &vecColList, ofstream &ofs);
 
-        int generateNextFloor(Floor thisFloor, Floor &nextFloor);
+        int generateNextFloor(Floor& thisFloor, Floor &nextFloor);
 };
 
 #endif
