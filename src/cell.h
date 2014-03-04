@@ -34,7 +34,7 @@ class Cell{
         void addPointerIndex(int iPointerIndex);
         void addIndex(int iCellIndex, int iColIndex);
 
-        int getNextCellIndex(int iMyIndex, double dParam1, double dParam2, int iSplitCount, int iRowCount, vec vecElem);
+        static int getNextCellIndex(int iMyIndex, double dParam1, double dParam2, int iSplitCount, int iRowCount, vec vecElem);
     
     private:
         bool m_bActivated;

@@ -43,7 +43,7 @@ class Building{
 
         vector< Floor* > m_pFloors;
 
-        int dfs(uint iCellIndex, int iFloorIndex, vector<uint> &vecColList, ofstream &ofs);
+        int dfs(uint iCellIndex, uint iFloorIndex, vector<uint> &vecColList, ofstream &ofs);
 
         int generateNextFloor(Floor& thisFloor, Floor &nextFloor);
 };

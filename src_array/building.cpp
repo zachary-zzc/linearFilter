@@ -5,7 +5,7 @@
 
 #include "building.h"
 
-#define DEFAULT_RECORD_FILE_PATH        "../record.csv"
+#define DEFAULT_RECORD_FILE_PATH        "../record_array.csv"
 #define DEFAULT_RECURSIVE_HEIGHT        2
 #define DEFAULT_THRESHELD               0
 #define DEFAULT_ROW_COUNT               2
@@ -36,7 +36,7 @@ Building::~Building(){
 //           Input matrix
 // Output  : State
 // ----------------------------------------------
-int Building::generateNextFloor(Floor& thisFloor, Floor &nextFloor){
+int Building::generateNextFloor(Floor& thisFloor, Floor& nextFloor){
     cout << "Set up Counter..." << endl;
     nextFloor.setCounter(thisFloor, m_matrix, m_iSplitCount, m_iRowCount);
     cout << "Set up Counter Success" << endl << endl;
@@ -48,19 +48,19 @@ int Building::generateNextFloor(Floor& thisFloor, Floor &nextFloor){
     return 0;
 }
 
-int Building::dfs(uint iCellIndex, int iFloorIndex, vector<uint> &vecColList, ofstream &ofs){
-    uint iStartIndex = (iCellIndex == 0) ? 0 : (m_pFloors[iFloorIndex]->getCounter(iCellIndex-1));
+int Building::dfs(uint iCellIndex, uint iFloorIndex, vector<uint> &vecColList, ofstream &ofs){
+    uint iStartIndex = m_pFloors[iFloorIndex]->getCounter(iCellIndex);
+    uint iEndIndex = m_pFloors[iFloorIndex]->getCounter(iCellIndex + 1);
     if (iFloorIndex == 0){
         // this is the last floor, size of lastColListSize() == 0, col index stored in pointer list
-        for (uint i = iStartIndex; i != m_pFloors[iFloorIndex]->getCounter(iCellIndex); i ++){
+        for (uint i = iStartIndex; i != iEndIndex; i ++){
             vecColList.push_back(m_pFloors[iFloorIndex]->getColIndex(i));
             Utils::record<uint>(vecColList, ofs);
             vecColList.pop_back();
         }
     }
     else{
-        for (uint i = iStartIndex; i != m_pFloors[iFloorIndex]->getCounter(iCellIndex); i ++){
-            // for (vector<int>::iterator iter = vecColIndex.begin(); iter != vecColIndex.end(); iter ++){
+        for (uint i = iStartIndex; i != iEndIndex; i ++){
             vecColList.push_back(m_pFloors[iFloorIndex]->getColIndex(i));
             uint iNextCellIndex = m_pFloors[iFloorIndex]->getCellIndex(i);
             dfs(iNextCellIndex, iFloorIndex-1, vecColList, ofs);
@@ -127,11 +127,6 @@ int Building::build(){
     cout << "Set up floor 1..." << endl;
     m_pFloors.clear();
 
-    /*for (uint i = 0; i != m_iHeight; i ++){
-        Floor* pFloor = new Floor(m_iSplitCount, m_iRowCount);
-        m_pFloors.push_back(pFloor);
-    }*/
-
     Floor* pFirstFloor = new Floor(m_iSplitCount, m_iRowCount);
     pFirstFloor->initFirstFloor(m_matrix, m_iSplitCount, m_iRowCount);
     m_pFloors.push_back(pFirstFloor);
@@ -139,15 +134,14 @@ int Building::build(){
 
     // set up higher floors
     for (int i = 1; i != m_iHeight; i++){
-        cout << "Floor " << i << " Activated Cells are : " << endl;
+        cout << "Floor " << i << " Total Cell Number : " << m_pFloors[i-1]->getLength() << endl;
         uint iActivatedCellCount = 0;
             for (uint l = 0; l != m_pFloors[i-1]->getLength(); l ++){
             if (m_pFloors[i-1]->checkActivated(l)){
-                cout << l << " ";
                 iActivatedCellCount ++;
             }
         }
-        cout << endl << "Floor " << i << " Activated Cell Number : " << iActivatedCellCount << endl;
+        cout << "Floor " << i << " Activated Cell Number : " << iActivatedCellCount << endl;
         cout << endl;
 
         cout << "Set up floor " << i+1 << "..." << endl; 
@@ -167,22 +161,21 @@ int Building::traceBack(){
     }
 
     // don't need to check the first floor
-    for (int iCurFloor = m_iHeight-1; iCurFloor > 0; iCurFloor --){
+    for (uint iCurFloor = m_iHeight-1; iCurFloor != 0; iCurFloor --){
         cout << "Checking Floor " << iCurFloor+1 << "..." << endl;
-        int iCurCellIndex = 0;
-        // for (vector<Cell>::iterator iter = m_pFloors[iCurFloor].vecCells.begin(); iter != m_vecFloors[iCurFloor].vecCells.end(); iter ++, iCurCellIndex ++ ){
+        uint iCurCellIndex = 0;
         for (uint i = 0; i != m_pFloors[iCurFloor]->getLength(); i ++ ){
-            // if (iter->checkActivated() && iter->checkLinear(iCurCellIndex, m_iSplitCount, m_iRowCount, m_dThresheld)){
             if (m_pFloors[iCurFloor]->checkActivated(i) && m_pFloors[iCurFloor]->checkLinear(i, m_iSplitCount, m_iRowCount, m_dThresheld)){
-                cout << iCurCellIndex << " is LINEAR and ACTIVATED, start trace back from this cell..." << endl;
+                cout << i << " is LINEAR and ACTIVATED, start trace back from this cell..." << endl;
                 vec printVec(m_iRowCount);
-                Utils::indexToVector(iCurCellIndex, printVec, m_iSplitCount, m_iRowCount);
+                Utils::indexToVector(i, printVec, m_iSplitCount, m_iRowCount);
                 printVec.print("Linear Vector is : ");
                 cout << "Linear under thresheld : " << m_dThresheld << endl; 
 
                 // this cell is activated and linear, trace back start from this cell
                 vector<uint> vecColList;
-                dfs(i, iCurFloor, vecColList, ofs);
+                uint iStartFloor = iCurFloor;
+                dfs(i, iStartFloor, vecColList, ofs);
             }
         }
     }

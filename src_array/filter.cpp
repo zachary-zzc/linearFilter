@@ -12,7 +12,7 @@
 
 #define DEFAULT_INPUT_MATRIX_FILE_PATH      "../input.txt"
 #define DEFAULT_CFGFILE_PATH                "../cfg.txt"
-#define DEFAULT_RECORD_FILE_PATH            "../record.csv"
+#define DEFAULT_RECORD_FILE_PATH            "../record_array.csv"
 
 #define MAX_MATRIX_ROW                      5000
 #define MAX_MATRIX_COL                      10000
@@ -110,7 +110,7 @@ int Filter::genBuilding(mat matrix){
 }
 
 int Filter::doFilter(){
-    // m_bStorage.traceBack();
+    m_bStorage.traceBack();
     return 0;
 }
 

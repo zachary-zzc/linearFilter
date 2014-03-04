@@ -100,9 +100,10 @@ double Utils::strToDouble(string ss){
 
 void Utils::indexToVector(uint iIndex, vec &vecCell, uint iSplitCount, uint iRowCount){
     vecCell.fill(-1);
-    for (uint i = 0; i < iRowCount && iIndex > 0; i ++){
+    for (uint i = 0; i != iRowCount && iIndex > 0; i ++){
         double tmp = (double)(iIndex % (iSplitCount - 1));
         tmp = (tmp / (iSplitCount - 1) - 0.5) * 2;
+        iIndex = iIndex / (iSplitCount - 1);
         try{
             vecCell(i) = tmp;
         }catch (int e){

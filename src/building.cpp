@@ -35,14 +35,12 @@ Building::~Building(){
 // ----------------------------------------------
 int Building::generateNextFloor(Floor thisFloor, Floor &nextFloor){
     int iCurCellIndex = 0, nextCellIndex = 0;
-    vector<int> vecColIndexVec;
     for (vector<Cell>::iterator iter = thisFloor.vecCells.begin(); iter != thisFloor.vecCells.end(); iter ++, iCurCellIndex ++){
         if (iter->checkActivated()){
-            vecColIndexVec.clear();
             for (double dParam1 = -1; dParam1 <= 1; dParam1 += (2.0 / (double)(m_iSplitCount-1))){
                 for (double dParam2 = -1; dParam2 <= 1; dParam2 += (2.0 / (double)(m_iSplitCount-1))){
                     for (int k = 0; k < m_matrix.n_cols; k ++){
-                        nextCellIndex = iter->getNextCellIndex(iCurCellIndex, dParam1, dParam2, m_iSplitCount, m_iRowCount, m_matrix.col(k));
+                        nextCellIndex = Cell::getNextCellIndex(iCurCellIndex, dParam1, dParam2, m_iSplitCount, m_iRowCount, m_matrix.col(k));
                         nextFloor.vecCells[nextCellIndex].activate();
                         nextFloor.vecCells[nextCellIndex].addIndex(iCurCellIndex, k);
                     }
@@ -155,15 +153,14 @@ int Building::build(){
     for (int i = 1; i < m_iHeight; i++){
 
         cout << "Floor " << i << " Total Cell Number : " << m_vecFloors[i-1].vecCells.size() << endl;
-        cout << "Floor " << i << " Activated Cells are : " << endl;
         int iActivatedCellCount = 0;
         for (vector<Cell>::iterator iter = m_vecFloors[i-1].vecCells.begin(); iter != m_vecFloors[i-1].vecCells.end(); iter ++){
             if (iter->checkActivated()){
-                cout << (iter - m_vecFloors[i-1].vecCells.begin()) << " ";
                 iActivatedCellCount ++;
             }
         }
-        cout << endl << "Floor " << i << " Activated Cell Number : " << iActivatedCellCount << endl;
+        cout << endl;
+        cout << "Floor " << i << " Activated Cell Number : " << iActivatedCellCount << endl;
         cout << endl;
 
         cout << "Set up floor " << i+1 << "..." << endl; 
@@ -194,7 +191,8 @@ int Building::traceBack(){
                 cout << "Linear under thresheld : " << m_dThresheld << endl; 
                 // this cell is activated and linear, trace back start from this cell
                 vector<int> vecColList;
-                dfs(&(*iter), iCurFloor, vecColList, ofs);
+                int iStartFloor = iCurFloor;
+                dfs(&(*iter), iStartFloor, vecColList, ofs);
             }
         }
     }

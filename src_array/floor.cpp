@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
 
 #include "floor.h"
 
@@ -61,7 +63,7 @@ bool Floor::checkLinear(const uint& iIndex, const uint& iSplitCount, const uint&
 // ergodic this floor and act f
 int Floor::ergodicFloor(Floor& nextFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount, int (Floor::*f)(const uint&, const uint&, const uint&)){
    uint nextCellIndex = 0;
-   for (uint i = 0; i != m_iLength; i ++){
+   for (int i = 0; i != m_iLength; i ++){
        if (checkActivated(i)){
            // cell activated
            for (double dParam1 = -1; dParam1 <= 1; dParam1 += (2.0 / (double)(iSplitCount - 1))){
@@ -82,8 +84,16 @@ int Floor::ergodicFloor(Floor& nextFloor, const mat& matrix, const uint& iSplitC
 }
 
 int Floor::setCounter(Floor& prevFloor, const mat& matrix, const uint& iSplitCount, const uint& iRowCount){
-    assert(m_pCounter != NULL && m_pOffsetCounter != NULL);
     prevFloor.ergodicFloor(*this, matrix, iSplitCount, iRowCount, &Floor::addCounter);
+    cout << "Total Cell Number : " << m_iLength << endl;
+    uint iActivatedCellCount = 0;
+    for (uint i = 0; i != m_iLength; i++){
+        if (checkActivated(i)){
+            iActivatedCellCount ++;
+        }
+        
+    }
+    cout << "Activated Cell Number : " << iActivatedCellCount << endl;
     return 0;
 }
 

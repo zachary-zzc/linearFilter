@@ -1,5 +1,5 @@
 def shelter():
-    fin = open('record.csv', 'r');
+    fin = open('record_array.csv', 'r');
     linearLines = fin.readlines()
     linearSet = set()
     for line in linearLines:

@@ -1,5 +1,5 @@
 OBJECTS = main_filter.o tools.o floor.o building.o filter.o
-CXXFLAGS = -g -O2 -larmadillo
+CXXFLAGS = -O2 -larmadillo
 
 filter : $(OBJECTS)
 	g++ -o filter $(OBJECTS) $(CXXFLAGS)
